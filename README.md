@@ -3,8 +3,7 @@
 Yourdesk is a program made with the intention of solving the classroom seats problem, by automating the disposition generation. 
 Yourdesk uses an algorithm that increases the probability of every person of moving away from their last seat to a new position inside the classroom.
 
-<video width="500" height="300" controls><source src=".github/video1.mp4" type="video/mp4"></video>
-
+![simple classroom example](.github/video1.png) 
 
 ## Contents
 
