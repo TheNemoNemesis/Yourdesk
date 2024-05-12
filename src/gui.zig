@@ -21,8 +21,8 @@ const uiphase = enum {
 
 pub const gui = struct {
     displaygrid: []string,
-    classroomTexture: ray.RenderTexture2D = undefined,
-    actionsTexture: ray.RenderTexture2D = undefined,
+    // classroomTexture: ray.RenderTexture2D = undefined,
+    // actionsTexture: ray.RenderTexture2D = undefined,
     currentphase: uiphase = uiphase.default,
 
     var prng: std.rand.DefaultPrng = undefined;
@@ -41,74 +41,74 @@ pub const gui = struct {
             self.displaygrid[e.gridpos] = try e.name.clone();
         }
     }
-    fn initrand() !void {
-        prng = std.rand.DefaultPrng.init(blk: {
-            var seed: u64 = undefined;
-            try std.posix.getrandom(std.mem.asBytes(&seed));
-            break :blk seed;
-        });
-        rand = prng.random();
-    }
 
-    pub fn init(self: *gui) !void {
-        ray.SetTraceLogLevel(ray.LOG_NONE);
-        ray.InitWindow(1200, 800, "YourDesk");
-        ray.SetExitKey(ray.KEY_NULL);
-        ray.SetTargetFPS(60);
-
-        self.classroomTexture = ray.LoadRenderTexture(1200, 700);
-        self.actionsTexture = ray.LoadRenderTexture(1200, 100);
-        try initrand();
-    }
-    pub fn run(self: *gui) void {
-        ray.BeginTextureMode(self.classroomTexture);
-        ray.ClearBackground(ray.BLUE);
-        ray.EndTextureMode();
-        ray.BeginTextureMode(self.actionsTexture);
-        ray.ClearBackground(ray.GREEN);
-        ray.EndTextureMode();
-        while (!ray.WindowShouldClose()) {
-            // update
-            // render
-            if (self.update()) |u| {
-                self.render(u);
-            }
-
-            ray.BeginDrawing();
-            ray.ClearBackground(ray.RAYWHITE);
-            ray.DrawTexture(self.classroomTexture.texture, 0, 0, ray.WHITE);
-            ray.DrawTexture(self.actionsTexture.texture, 0, 700, ray.WHITE);
-            ray.DrawRectangle(5, 5, 100, 30, ray.RAYWHITE);
-            ray.DrawFPS(10, 10);
-            ray.EndDrawing();
-        }
-    }
-    pub fn deinit(self: *gui) void {
-        ray.UnloadRenderTexture(self.classroomTexture);
-        ray.UnloadRenderTexture(self.actionsTexture);
-        ray.CloseWindow();
-    }
-
-    fn update(self: *gui) ?renderopt {
-        const mpoint = ray.GetMousePosition();
-        _ = mpoint; // autofix
-        switch (self.currentphase) {
-            .default => {},
-            .running => {
-                std.mem.swap(string, &self.displaygrid[rand.int(usize) % self.displaygrid.len], &self.displaygrid[rand.int(usize) % self.displaygrid.len]);
-            },
-            .pause => {},
-            .stop => {},
-            .setup => {},
-        }
-        return null;
-    }
-    fn render(self: *gui, options: renderopt) void {
-        switch (options) {
-            .actions => {},
-            .classroom => {},
-            .both => {},
-        }
-        _ = self; // autofix
-    }
+    // fn initrand() !void {
+    //     prng = std.rand.DefaultPrng.init(blk: {
+    //         var seed: u64 = undefined;
+    //         try std.posix.getrandom(std.mem.asBytes(&seed));
+    //         break :blk seed;
+    //     });
+    //     rand = prng.random();
+    // }
+    // pub fn init(self: *gui) !void {
+    //     ray.SetTraceLogLevel(ray.LOG_NONE);
+    //     ray.InitWindow(1200, 800, "YourDesk");
+    //     ray.SetExitKey(ray.KEY_NULL);
+    //     ray.SetTargetFPS(60);
+    //
+    //     self.classroomTexture = ray.LoadRenderTexture(1200, 700);
+    //     self.actionsTexture = ray.LoadRenderTexture(1200, 100);
+    //     try initrand();
+    // }
+    // pub fn run(self: *gui) void {
+    //     ray.BeginTextureMode(self.classroomTexture);
+    //     ray.ClearBackground(ray.BLUE);
+    //     ray.EndTextureMode();
+    //     ray.BeginTextureMode(self.actionsTexture);
+    //     ray.ClearBackground(ray.GREEN);
+    //     ray.EndTextureMode();
+    //     while (!ray.WindowShouldClose()) {
+    //         // update
+    //         // render
+    //         if (self.update()) |u| {
+    //             self.render(u);
+    //         }
+    //
+    //         ray.BeginDrawing();
+    //         ray.ClearBackground(ray.RAYWHITE);
+    //         ray.DrawTexture(self.classroomTexture.texture, 0, 0, ray.WHITE);
+    //         ray.DrawTexture(self.actionsTexture.texture, 0, 700, ray.WHITE);
+    //         ray.DrawRectangle(5, 5, 100, 30, ray.RAYWHITE);
+    //         ray.DrawFPS(10, 10);
+    //         ray.EndDrawing();
+    //     }
+    // }
+    // pub fn deinit(self: *gui) void {
+    //     ray.UnloadRenderTexture(self.classroomTexture);
+    //     ray.UnloadRenderTexture(self.actionsTexture);
+    //     ray.CloseWindow();
+    // }
+    //
+    // fn update(self: *gui) ?renderopt {
+    //     const mpoint = ray.GetMousePosition();
+    //     _ = mpoint; // autofix
+    //     switch (self.currentphase) {
+    //         .default => {},
+    //         .running => {
+    //             std.mem.swap(string, &self.displaygrid[rand.int(usize) % self.displaygrid.len], &self.displaygrid[rand.int(usize) % self.displaygrid.len]);
+    //         },
+    //         .pause => {},
+    //         .stop => {},
+    //         .setup => {},
+    //     }
+    //     return null;
+    // }
+    // fn render(self: *gui, options: renderopt) void {
+    //     switch (options) {
+    //         .actions => {},
+    //         .classroom => {},
+    //         .both => {},
+    //     }
+    //     _ = self; // autofix
+    // }
 };

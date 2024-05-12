@@ -30,7 +30,7 @@ pub fn build(b: *std.Build) !void {
         .files = sources.items,
     });
     exe.linkLibCpp();
-    exe.linkSystemLibrary("raylib");
+    // exe.linkSystemLibrary("raylib");
     b.installArtifact(exe);
 
     // Run
