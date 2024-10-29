@@ -5,30 +5,31 @@ pub fn build(b: *std.Build) !void {
     const optimize = b.standardOptimizeOption(.{});
     const exe = b.addExecutable(.{
         .name = "YourDesk",
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
         .link_libc = true,
     });
-    var sources = std.ArrayList([]const u8).init(b.allocator);
-    // Search for all C/C++ files in `src` and add them
-    {
-        var dir = try std.fs.cwd().openDir("src", .{ .iterate = true });
-        var walker = try dir.walk(b.allocator);
-        defer walker.deinit();
-        while (try walker.next()) |entry| {
-            const ext = std.fs.path.extension(entry.basename);
-
-            if (std.mem.eql(u8, ext, ".c") or std.mem.eql(u8, ext, ".cpp")) {
-                // we have to clone the path as walker.next() or walker.deinit() will override/kill it
-                try sources.append(b.dupe(entry.path));
-            }
-        }
-    }
-    exe.addCSourceFiles(.{
-        .root = .{ .path = "src" },
-        .files = sources.items,
-    });
+    // var sources = std.ArrayList([]const u8).init(b.allocator);
+    // // Search for all C/C++ files in `src` and add them
+    // {
+    //     var dir = try std.fs.cwd().openDir("src", .{ .iterate = true });
+    //     var walker = try dir.walk(b.allocator);
+    //     defer walker.deinit();
+    //     while (try walker.next()) |entry| {
+    //         const ext = std.fs.path.extension(entry.basename);
+    //
+    //         if (std.mem.eql(u8, ext, ".c") or std.mem.eql(u8, ext, ".cpp")) {
+    //             // we have to clone the path as walker.next() or walker.deinit() will override/kill it
+    //             try sources.append(b.dupe(entry.path));
+    //         }
+    //     }
+    // }
+    // exe.addCSourceFiles(.{
+    //     .root = b.path("src"),
+    //     .files = sources.items,
+    // });
+    exe.addCSourceFile(.{ .file = b.path("src/rgen.cpp") });
     exe.linkLibCpp();
     // exe.linkSystemLibrary("raylib");
     b.installArtifact(exe);
@@ -44,14 +45,14 @@ pub fn build(b: *std.Build) !void {
 
     // Test
     const unit_tests = b.addTest(.{
-        .root_source_file = .{ .path = "src/test.zig" },
+        .root_source_file = b.path("src/test.zig"),
         .target = target,
         .optimize = optimize,
         .link_libc = true,
     });
     unit_tests.linkLibC();
     unit_tests.addCSourceFiles(.{
-        .root = .{ .path = "src" },
+        .root = b.path("src"),
         .files = sources.items,
     });
     unit_tests.linkLibCpp();

@@ -1,0 +1,28 @@
+#
+# rgl layout text file (v4.0) - raygui layout file generated using rGuiLayout
+#
+# Number of controls:     17
+#
+# Ref. window:    r <x> <y> <width> <height>
+# Anchor info:    a <id> <name> <posx> <posy> <enabled>
+# Control info:   c <id> <type> <name> <rectangle> <anchor_id> <text>
+#
+r 0 40 -1 -1
+a 001 anchor01 32 24 1
+c 000 3 WINDOW 32 24 1056 616 0 
+c 001 1 CLASS 8 16 1040 504 1 CLASS
+c 002 5 BUTTONADD 80 568 136 48 0 ADD
+c 003 5 BUTTONREMOVE 240 568 136 48 0 REMOVE
+c 004 5 BUTTONRENAME 400 568 136 48 0 RENAME
+c 005 8 BUTTONLINES 560 568 136 48 0 SET LINES
+c 006 5 BUTTONSTART 824 560 176 64 0 START
+c 007 3 SLIDEFLOAT 320 480 512 48 0 
+c 008 18 SLIDEPROGRESS 336 496 480 16 0 
+c 009 23 PERSON 80 72 136 40 0 PERSON
+c 010 3 LINEFLOAT 472 480 208 48 0 
+c 011 15 LINESELECT 488 488 176 32 0 
+c 012 3 LINEFLOAT2 864 152 200 264 0 
+c 013 22 LINECOLORPICK 880 176 144 136 0 
+c 014 3 LINECOLOR 880 320 168 16 0 
+c 015 14 LINENUMBER 880 352 112 40 0 
+c 016 5 LINEADD 1000 352 48 40 0 ADD
