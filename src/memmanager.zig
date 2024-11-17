@@ -1,58 +1,63 @@
 const std = @import("std");
+const randomgen = @import("randomgen.zig");
 const string = std.ArrayList(u8);
-const calloc = std.heap.c_allocator;
-const currentVersion: usize = 0;
+const allocator = std.heap.page_allocator;
+const ray = @cImport({
+    @cInclude("raylib.h");
+    @cInclude("raygui.h");
+});
+const currentVersion: usize = 1;
 
-const datachunk = struct {
-    sizex: usize,
-    sizey: usize,
-    grid: [][]u8,
+const person = struct {
+    name: []const u8,
+    position: ray.Vector2,
 };
 const memchunk = struct {
     version: usize,
-    data: datachunk,
+    data: []person,
 };
 
-fn handleversion(version: usize) void {
-    _ = version; // autofix
-    return;
+const versionError = error {
+    versionTooOld,
+    versionTooNew,
+    notAVersion,
+};
+fn handleversion(version: usize) !void {
+    switch (version) {
+        0 => { return versionError.versionTooOld; }, // old version error
+        1 => {}, // current version
+        else => { return versionError.versionTooNew; },
+    }
 }
 
-pub fn loadData(memptr: *([]string), sizex: *usize, sizey: *usize) !void {
+pub fn loadData(memptr: *randomgen.classroom) !void {
     const file = try std.fs.cwd().openFile("resources/config.json", .{ .mode = .read_only });
     defer file.close();
-    const data = try calloc.alloc(u8, (try file.stat()).size);
-    defer calloc.free(data);
+    const data = try allocator.alloc(u8, (try file.stat()).size);
+    defer allocator.free(data);
     try file.reader().readNoEof(data);
 
-    // TODO: handle old versions
-    const parsed = try std.json.parseFromSlice(memchunk, calloc, data, .{ .allocate = .alloc_always });
+    const parsed = try std.json.parseFromSlice(memchunk, allocator, data, .{ .allocate = .alloc_always });
     defer parsed.deinit();
-    const chunk: memchunk = parsed.value;
-    sizex.* = chunk.data.sizex;
-    sizey.* = chunk.data.sizey;
-    memptr.* = try calloc.alloc(string, chunk.data.grid.len);
-
-    // parse data to current version config
-    for (chunk.data.grid, 0..) |list, index| {
-        memptr.*[index] = string.init(calloc);
-        try memptr.*[index].appendSlice(list);
+    try handleversion(parsed.value.version);
+    for (parsed.value.data) |entry| {
+        try memptr.put(try allocator.dupe(u8, entry.name), randomgen.desk{.oldPosition = undefined, .newPosition = entry.position});
     }
 }
-pub fn saveData(memptr: []string, sizex: usize, sizey: usize) !void {
+pub fn saveData(memptr: *randomgen.classroom) !void {
     var chunk: memchunk = undefined;
-    chunk.data.grid = try calloc.alloc([]u8, memptr.len);
-    defer calloc.free(chunk.data.grid);
-    for (memptr, 0..) |list, index| {
-        chunk.data.grid[index] = list.items;
-    }
-    chunk.data.sizex = sizex;
-    chunk.data.sizey = sizey;
     chunk.version = currentVersion;
-
-    const data = try std.json.stringifyAlloc(calloc, chunk, .{ .whitespace = .indent_4 });
-    defer calloc.free(data);
+    chunk.data = try allocator.alloc(person, memptr.count());
+    defer allocator.free(chunk.data);
+    var iter = memptr.iterator();
+    var index: usize = 0;
+    while (iter.next()) |entry| : (index += 1) {
+        chunk.data[index].name = entry.key_ptr.*;
+        chunk.data[index].position = entry.value_ptr.newPosition;
+    }
+    const data = try std.json.stringifyAlloc(allocator, chunk, .{ .whitespace = .indent_4 });
+    defer allocator.free(data);
     const file = try std.fs.cwd().openFile("resources/config.json", .{ .mode = .write_only });
     defer file.close();
-    _ = try file.write(data);
+    try file.writeAll(data);
 }

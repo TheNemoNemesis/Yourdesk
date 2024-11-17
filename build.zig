@@ -29,9 +29,10 @@ pub fn build(b: *std.Build) !void {
     //     .root = b.path("src"),
     //     .files = sources.items,
     // });
-    exe.addCSourceFile(.{ .file = b.path("src/rgen.cpp") });
+    // exe.addCSourceFile(.{ .file = b.path("src/rgen.cpp") });
     exe.linkLibCpp();
-    // exe.linkSystemLibrary("raylib");
+    exe.linkSystemLibrary("raylib");
+    exe.linkSystemLibrary("raygui");
     b.installArtifact(exe);
 
     // Run
@@ -50,11 +51,7 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
         .link_libc = true,
     });
-    unit_tests.linkLibC();
-    unit_tests.addCSourceFiles(.{
-        .root = b.path("src"),
-        .files = sources.items,
-    });
+    // exe.addCSourceFile(.{ .file = b.path("src/rgen.cpp") });
     unit_tests.linkLibCpp();
     const run_unit_tests = b.addRunArtifact(unit_tests);
     const test_step = b.step("test", "Test the application");

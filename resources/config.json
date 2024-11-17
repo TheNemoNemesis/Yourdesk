@@ -1,10 +1,19 @@
 {
-    "version": 0,
-    "data": {
-        "sizex": 1,
-        "sizey": 1,
-        "grid": [
-            ""
-        ]
-    }
+    "version": 1,
+    "data": [
+        {
+            "name": "Person 1",
+            "position": {
+                "x": 1e1,
+                "y": 2e1
+            }
+        },
+        {
+            "name": "Person 2",
+            "position": {
+                "x": 1.001500015258789e2,
+                "y": 2.0014999389648438e2
+            }
+        }
+    ]
 }
